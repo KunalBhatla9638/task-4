@@ -4,15 +4,11 @@ const sequelize = require("../utils/Database");
 const listProducts = async (req, res) => {
   try {
     const products = await sequelize.query(
-      `SELECT 
-                p.productname, 
-                FORMAT((p.price - (p.price * p.discountpercentage/100)),2) as discountedPrice, 
-                p.sku, 
-                p.variantid, 
-                p.description, 
-                c.categoryname as category_name 
-            FROM 
-                products p JOIN category c ON p.categoryid = c.categoryid`,
+      `
+      SELECT p.productname, p.price, p.discountpercentage, p.sku,
+      p.variantid, p.description, FORMAT((p.price - (p.price * p.discountpercentage/100)),2) as discountedPrice,
+      c.categoryname as category_name FROM products p JOIN category c ON p.categoryid = c.categoryid;
+      `,
       {
         type: QueryTypes.SELECT,
       }
