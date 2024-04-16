@@ -12,12 +12,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = (document, length) => {
+const sendEmail = (document, rows, duplicateRecords) => {
   const mailOptions = {
     from: "kbhatla.netclues@gmail.com",
-    to: "soyayar215@agaseo.com",
+    to: "kbhatla.netclues@gmail.com",
     subject: "Kunal send you the mail regarding your file...!",
-    text: `This ${document.filename} contains ${length} rows`,
+    text: `This ${
+      document.filename
+    } contains total ${rows} rows and you have total ${duplicateRecords} duplicate entry so your valid ${
+      rows - duplicateRecords
+    } records are inserted`,
     attachments: [
       {
         filename: document.filename,

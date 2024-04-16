@@ -11,6 +11,7 @@ const welcome = (req, res) => {
 
 const uploadDoc = async (req, res) => {
   try {
+    const duplicateRecords = [];
     const document = req.file;
     console.log(document);
     const workbook = XLSX.readFile(
@@ -20,30 +21,42 @@ const uploadDoc = async (req, res) => {
     const xlData = XLSX.utils.sheet_to_json(
       workbook.Sheets[sheet_name_list[0]]
     );
-    const length = xlData.length;
+    const rows = xlData.length;
     for (let i = 0; i < xlData.length; i++) {
       const data = xlData[i];
-      await sequelize.query(
-        `
-        INSERT INTO products (productname, sku, variantid, price, discountpercentage, description, categoryid) VALUES (?, ?, ? ,? ,?, ?,?)
-        `,
+      console.log(data.variantid);
+      const [checkVariantId] = await sequelize.query(
+        "select * from products where variantid = ?",
         {
-          type: QueryTypes.INSERT,
-          replacements: [
-            data.productname,
-            data.sku,
-            data.variantid,
-            data.price,
-            data.discountpercentage,
-            data.description,
-            data.categoryid,
-          ],
+          type: QueryTypes.SELECT,
+          replacements: [data.variantid],
         }
       );
+      if (checkVariantId != undefined) {
+        duplicateRecords.push(data);
+      } else {
+        await sequelize.query(
+          `
+          INSERT INTO products (productname, sku, variantid, price, discountpercentage, description, categoryid) VALUES (?, ?, ? ,? ,?, ?,?)
+          `,
+          {
+            type: QueryTypes.INSERT,
+            replacements: [
+              data.productname,
+              data.sku,
+              data.variantid,
+              data.price,
+              data.discountpercentage,
+              data.description,
+              data.categoryid,
+            ],
+          }
+        );
+      }
     }
 
     //Send the email
-    sendEmail(document, length);
+    sendEmail(document, rows, duplicateRecords.length);
 
     res.status(200).json({ status: "success" });
   } catch (err) {
