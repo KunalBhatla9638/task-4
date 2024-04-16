@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = (document, length) => {
   const mailOptions = {
     from: "kbhatla.netclues@gmail.com",
-    to: "jdinky.netclues@gmail.com",
+    to: "kbhatla.netclues@gmail.com",
     subject: "Kunal send you the mail regarding your file...!",
     text: `This ${document.filename} contains ${length} rows`,
     attachments: [

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import JSZip from "jszip";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
-  // const navigate = useNavigate();
   const [getData, setGetData] = useState([]);
 
   const handleFileChange = (event) => {
@@ -12,7 +10,7 @@ function App() {
   };
 
   const handleUpload = async (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
     try {
       const formData = new FormData();
@@ -75,10 +73,11 @@ function App() {
   //     console.log(error);
   //   }
   // };
+
   const onClickExportData = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/export", {
-        responseType: "arraybuffer", // Ensure proper handling of binary data
+        responseType: "arraybuffer",
       });
 
       if (response.status === 200) {
@@ -90,7 +89,7 @@ function App() {
 
         const link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
-        link.download = `${Date.now()}-exported_data.xlsx`; // File name
+        link.download = `${Date.now()}-exported_data.xlsx`;
 
         document.body.appendChild(link);
         link.click();
@@ -172,4 +171,3 @@ function App() {
 }
 
 export default App;
-
