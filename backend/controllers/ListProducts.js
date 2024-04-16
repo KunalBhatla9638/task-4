@@ -20,6 +20,34 @@ const listProducts = async (req, res) => {
   }
 };
 
+const deleteProducts = async (req, res) => {
+  const sku = req.params.sku;
+  console.log(sku);
+  try {
+    const [checkSku] = await sequelize.query(
+      "select * from products where sku = ?",
+      {
+        type: QueryTypes.SELECT,
+        replacements: [sku],
+      }
+    );
+
+    if (checkSku == undefined) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    await sequelize.query("delete from products where sku = ?", {
+      type: QueryTypes.DELETE,
+      replacements: [sku],
+    });
+
+    res.status(200).json({ status: "success" });
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   listProducts,
+  deleteProducts,
 };

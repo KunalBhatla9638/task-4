@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { DataGrid } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -45,7 +47,9 @@ function App() {
     try {
       const response = await axios.get("http://localhost:3000/api/products");
       if (response.status == 200) {
+        console.log(response.data);
         setGetData(response.data);
+        // fetchAllData();
       }
     } catch (error) {
       console.log(error);
@@ -102,9 +106,76 @@ function App() {
     }
   };
 
+  const columns = [
+    // { field: "productid", headerName: "Product ID", width: 120 },
+    {
+      field: "productname",
+      headerName: "Product Name",
+      width: 200,
+      editable: true,
+    },
+    { field: "sku", headerName: "SKU", width: 150, editable: true },
+    {
+      field: "variantid",
+      headerName: "Variant ID",
+      type: "number",
+      width: 120,
+      editable: true,
+    },
+    {
+      field: "price",
+      headerName: "Price",
+      type: "number",
+      width: 120,
+      editable: true,
+    },
+    {
+      field: "discountpercentage",
+      headerName: "Discount %",
+      type: "number",
+      width: 140,
+      editable: true,
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      width: 450,
+      editable: true,
+    },
+
+    {
+      field: "discountedPrice",
+      headerName: "Discounted Price",
+      width: 250,
+      editable: true,
+    },
+    {
+      field: "category_name",
+      headerName: "Category Name",
+      type: "number",
+      width: 130,
+      editable: true,
+    },
+  ];
+
   useEffect(() => {
     fetchAllData();
-  });
+  }, []);
+
+  const deleteRecord = async (sku) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/delete/${sku}`
+      );
+
+      if (response.status == 200) {
+        console.log(response.data.status);
+        fetchAllData();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -125,7 +196,7 @@ function App() {
       </div>
 
       <div>
-        <table className="table">
+        {/* <table className="table">
           <thead className="thead-dark">
             <tr>
               <th scope="col">productname</th>
@@ -136,6 +207,7 @@ function App() {
               <th scope="col">description</th>
               <th scope="col">discountedPrice</th>
               <th scope="col">category_name</th>
+              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -160,11 +232,41 @@ function App() {
                   <td>{description}</td>
                   <td>{discountedPrice}</td>
                   <td>{category_name}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      onClick={() => {
+                        deleteRecord(sku);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
-        </table>
+        </table> */}
+        <Box sx={{ height: 400, width: "100%" }}>
+          <DataGrid
+            rows={getData.map((product) => ({
+              ...product,
+              id: product.sku,
+            }))}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
+            }}
+            pageSizeOptions={[5]}
+            checkboxSelection
+            disableRowSelectionOnClick
+          />
+        </Box>
       </div>
     </>
   );
