@@ -23,6 +23,7 @@ const uploadDoc = async (req, res) => {
     );
     const rows = xlData.length;
     for (let i = 0; i < xlData.length; i++) {
+      console.log(i);
       const data = xlData[i];
       console.log(data.variantid);
       const [checkVariantId] = await sequelize.query(
@@ -35,6 +36,7 @@ const uploadDoc = async (req, res) => {
       if (checkVariantId != undefined) {
         duplicateRecords.push(data);
       } else {
+        console.log("in");
         await sequelize.query(
           `
           INSERT INTO products (productname, sku, variantid, price, discountpercentage, description, categoryid) VALUES (?, ?, ? ,? ,?, ?,?)
@@ -56,7 +58,7 @@ const uploadDoc = async (req, res) => {
     }
 
     //Send the email
-    sendEmail(document, rows, duplicateRecords.length);
+    sendEmail(document, rows, duplicateRecords);
 
     res.status(200).json({ status: "success" });
   } catch (err) {

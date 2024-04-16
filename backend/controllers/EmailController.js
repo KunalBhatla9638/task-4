@@ -19,8 +19,10 @@ const sendEmail = (document, rows, duplicateRecords) => {
     subject: "Kunal send you the mail regarding your file...!",
     text: `This ${
       document.filename
-    } contains total ${rows} rows and you have total ${duplicateRecords} duplicate entry so your valid ${
-      rows - duplicateRecords
+    } contains total ${rows} rows and you have total ${
+      duplicateRecords.length
+    } duplicate entry so your valid ${
+      rows - duplicateRecords.length
     } records are inserted`,
     attachments: [
       {
